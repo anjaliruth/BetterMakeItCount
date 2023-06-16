@@ -3,13 +3,14 @@ import { Duration } from "luxon";
 
 export default function TimeTracker() {
   const [startTimeStamp, setStartTimeStamp] = useState(null);
+  const [todayTotal, setTodayTotal] = useState(0);
   const [elapsedTimes, setElapsedTimes] = useState([]);
   const [sessionsByDates, setSessionsByDates] = useState({})
- let currentDate;
 //   console.log("start:",startTimeStamp);
 //   console.log("session:",elapsedTimes);
   console.log("Dates:",sessionsByDates);
   console.log("elapsedTime", elapsedTimes)
+  console.log("Today total", todayTotal)
 //   console.log(new Date())
 
   const useRenderOnInterval = (interval) => {
@@ -49,6 +50,16 @@ return <h1 className="stopWatch">{getElapsedTime()}</h1>
     setStartTimeStamp(Date.now());
   }
 
+
+  function msRescale(time) {
+    const timeValue =  Duration.fromObject({
+      ...Duration.fromMillis(time)
+        .rescale()
+        .toObject(),
+      milliseconds: undefined
+    }).toHuman({unitDisplay: "short"})
+    return timeValue
+  }
 //   function handleStop() {
 //     setElapsedTimes((prevTotal) => [...prevTotal, Date.now() - startTimeStamp]);
 // const currentDate = new Date().toISOString().split("T")[0]
@@ -66,32 +77,43 @@ return <h1 className="stopWatch">{getElapsedTime()}</h1>
 //   }
 
 function handleStop() {
+    const currentDate = new Date().toISOString().split("T")[0];
     setElapsedTimes((prevTotal)=> {
-    const updatedElapsedTimes = [...prevTotal, Date.now() - startTimeStamp ];
+    const updatedElapsedTimes = [ ...prevTotal, Date.now() - startTimeStamp ];
  setSessionsByDates((prev) =>{
     const updatedSessions = {...prev}
-     currentDate = new Date().toISOString().split("T")[0];
     if(updatedSessions[currentDate]) {
-    updatedSessions[currentDate].push(...updatedElapsedTimes)
+    updatedSessions[currentDate].push(Date.now() - startTimeStamp )
     }
     else{
-        updatedSessions[currentDate] = [...updatedElapsedTimes]
+        updatedSessions[currentDate] = [Date.now() - startTimeStamp ]
     }
+   
     //we return these 2 because the state stters have been called for these 2 states, which trigger a rerender.
     //by returning updatedSession and updatedElapsedTimes, we make sure that  subsequent code that depends on those state values will have access to the most recent and accurate data.
     return updatedSessions
- });
- return updatedElapsedTimes
-      })
 
+ });
+ 
+ calculateTodayTotal()
+ return updatedElapsedTimes
+
+      })
+setTodayTotal(calculateTodayTotal)
     setStartTimeStamp(null)
 }
 
 function calculateTodayTotal() {
+    const currentDate = new Date().toISOString().split("T")[0];
     if (sessionsByDates[currentDate]) {
-
-    }
+       return (sessionsByDates[currentDate].reduce((total, duration)=> total + duration, 0))
 }
+else{
+  return 0
+}
+}
+
+
   return (
     <div className="timeTrackerComponent">
     <CurrentTimer/>
@@ -104,15 +126,12 @@ function calculateTodayTotal() {
       {elapsedTimes.map((singleSession, i) => (
         //rescale => rescale units to their largest representation
         <h1 className="elapsedTime" key={i}>
-        {Duration.fromObject({
-          ...Duration.fromMillis(singleSession)
-            .rescale()
-            .toObject(),
-          milliseconds: undefined
-        }).toHuman({unitDisplay: "short"})}
+       {msRescale(singleSession)}
         </h1>
 
       ))}
+      {(todayTotal> 0) && <h1>Total: {todayTotal}</h1>}
+      
     </div>
   );
 }
