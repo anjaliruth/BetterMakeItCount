@@ -3,11 +3,9 @@ import { Duration, DateTime } from "luxon";
 
 export default function TimeTracker() {
   const [startTimeStamp, setStartTimeStamp] = useState(null);
-  const [todayTotal, setTodayTotal] = useState(0);
-  const [elapsedTimes, setElapsedTimes] = useState([]);
   const [sessionsByDates, setSessionsByDates] = useState({});
   const [sessionTimeStamp, setSessionTimeStamp] = useState([]);
-  const currentDate = new Date().toISOString().split("T")[0];
+  const currentDate = new Date().toLocaleDateString()
   // const currentTime = DateTime.now().toFormat("[HH:mm]: ");
   //   console.log("start:",startTimeStamp);
   //   console.log("session:",elapsedTimes);
@@ -17,8 +15,9 @@ export default function TimeTracker() {
   console.log("Sessions for Current Date:", sessionsByDates[currentDate]);
   console.log("Sessions by Dates:", sessionsByDates);
   // console.log("time", currentTime);
-  localStorage.clear();
-
+  console.log("Todays DAte:", currentDate)
+  console.log("Todays DAte2:", new Date().toLocaleDateString())
+  // localStorage.clear()
   //   console.log(new Date())
 
   const daysOfTheWeek = [1, 2, 3, 4, 5, 6, 7];
@@ -77,34 +76,28 @@ export default function TimeTracker() {
   }
 
   function handleStop() {
-    const newData = { "2023-06-15": { elapsedtime: 32334 } };
+    // const newData = { "2023-06-15": { elapsedtime: 32334 } };
     const stopTime = DateTime.now().toFormat("[h:mm a]: ");
-    setElapsedTimes((prevTotal) => {
-      const updatedElapsedTimes = [...prevTotal, Date.now() - startTimeStamp];
-      setSessionsByDates((prev) => {
-        const updatedSessions = { ...prev };
-        if (updatedSessions[currentDate]) {
-          updatedSessions[currentDate].push({
-            elapsedTime: Date.now() - startTimeStamp,
-            timestamp: stopTime,
-          });
-        } else {
-          updatedSessions[currentDate] = [
-            ...(updatedSessions[currentDate] || []),
-            { elapsedTime: Date.now() - startTimeStamp, timestamp: stopTime },
-          ];
-        }
 
-        //we return these 2 because the state stters have been called for these 2 states, which trigger a rerender.
-        //by returning updatedSession and updatedElapsedTimes, we make sure that  subsequent code that depends on those state values will have access to the most recent and accurate data.
-        // // Adds new data to localStorage
-        Object.assign(updatedSessions, newData);
-        localStorage.setItem("session", JSON.stringify(updatedSessions));
-        setTodayTotal(totalDaily(currentDate));
-        return updatedSessions;
-      });
+    setSessionsByDates((prev) => {
+      const updatedSessions = { ...prev };
+      if (updatedSessions[currentDate]) {
+        updatedSessions[currentDate].push({
+          elapsedTime: Date.now() - startTimeStamp,
+          timestamp: stopTime,
+        });
+      } else {
+        updatedSessions[currentDate] = [
+          { elapsedTime: Date.now() - startTimeStamp, timestamp: stopTime },
+        ];
+      }
 
-      return updatedElapsedTimes;
+      //we return these 2 because the state stters have been called for these 2 states, which trigger a rerender.
+      //by returning updatedSession and updatedElapsedTimes, we make sure that  subsequent code that depends on those state values will have access to the most recent and accurate data.
+      // // Adds new data to localStorage
+      // Object.assign(updatedSessions, newData);
+      localStorage.setItem("session", JSON.stringify(updatedSessions));
+      return updatedSessions;
     });
     setStartTimeStamp(null);
   }
@@ -115,8 +108,10 @@ export default function TimeTracker() {
       if (updatedSessions[date]) {
         updatedSessions[date].splice(index, 1);
       }
+      return updatedSessions;
     });
   }
+
   function totalDaily(date) {
     if (sessionsByDates[date] && Array.isArray(sessionsByDates[date])) {
       return sessionsByDates[date].reduce(
@@ -127,6 +122,7 @@ export default function TimeTracker() {
       return 0;
     }
   }
+  const dailyTotal = totalDaily(currentDate);
 
   function getLastWeekDates(length) {
     let currentDate = new Date();
@@ -165,23 +161,27 @@ export default function TimeTracker() {
               className="deleteButton"
               onClick={() => handleDelete(currentDate, i)}
             >
-             🗑️
+              🗑️
             </button>
           </div>
         ))}
-      {todayTotal > 0 && <h1>Total: {msRescale(todayTotal)}</h1>}
-      {daysOfTheWeek.map((day, i) => (
-        <div>
-          <h2 key={i}>
-            {DateTime.fromISO(getLastWeekDates(day)).toFormat("dd LLL yy")}
-          </h2>
-          <h3 key={i + 100}>
-            {totalDaily(getLastWeekDates(day))
-              ? msRescale(totalDaily(getLastWeekDates(day)))
-              : "No recorded sessions"}
-          </h3>
-        </div>
-      ))}
+      {dailyTotal && (
+        <h1 className="dailyTotal">Total: {msRescale(dailyTotal)}</h1>
+      )}
+      <div className="total">
+        {daysOfTheWeek.map((day, i) => (
+          <div className="previousDailyTotal">
+            <h2 key={i}>
+              {DateTime.fromISO(getLastWeekDates(day)).toFormat("dd LLL yy")}
+            </h2>
+            <h3 key={i + 100}>
+              {totalDaily(getLastWeekDates(day))
+                ? msRescale(totalDaily(getLastWeekDates(day)))
+                : "No recorded sessions"}
+            </h3>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
