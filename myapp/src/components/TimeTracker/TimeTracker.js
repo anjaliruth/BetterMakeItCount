@@ -17,7 +17,7 @@ export default function TimeTracker() {
   console.log("Sessions for Current Date:", sessionsByDates[currentDate]);
   console.log("Sessions by Dates:", sessionsByDates);
   // console.log("time", currentTime);
-  localStorage.clear()
+  localStorage.clear();
 
   //   console.log(new Date())
 
@@ -43,7 +43,6 @@ export default function TimeTracker() {
         const parsedSession = JSON.parse(storedSession);
         setSessionsByDates(parsedSession);
         console.log("Storage:", parsedSession);
-        
       } catch (error) {
         console.error("Error parsing sessions from local storage");
       }
@@ -78,20 +77,22 @@ export default function TimeTracker() {
   }
 
   function handleStop() {
-    const newData = { "2023-06-15": {elapsedtime: 32334, } };
+    const newData = { "2023-06-15": { elapsedtime: 32334 } };
     const stopTime = DateTime.now().toFormat("[h:mm a]: ");
     setElapsedTimes((prevTotal) => {
       const updatedElapsedTimes = [...prevTotal, Date.now() - startTimeStamp];
       setSessionsByDates((prev) => {
         const updatedSessions = { ...prev };
         if (updatedSessions[currentDate]) {
-          updatedSessions[currentDate].push({elapsedTime: Date.now() - startTimeStamp, timestamp: stopTime});
+          updatedSessions[currentDate].push({
+            elapsedTime: Date.now() - startTimeStamp,
+            timestamp: stopTime,
+          });
         } else {
           updatedSessions[currentDate] = [
-  ...(updatedSessions[currentDate] || []),
-  { elapsedTime: Date.now() - startTimeStamp, timestamp: stopTime }
-];
-
+            ...(updatedSessions[currentDate] || []),
+            { elapsedTime: Date.now() - startTimeStamp, timestamp: stopTime },
+          ];
         }
 
         //we return these 2 because the state stters have been called for these 2 states, which trigger a rerender.
@@ -117,7 +118,7 @@ export default function TimeTracker() {
     });
   }
   function totalDaily(date) {
-    if (sessionsByDates[date]&& Array.isArray(sessionsByDates[date])) {
+    if (sessionsByDates[date] && Array.isArray(sessionsByDates[date])) {
       return sessionsByDates[date].reduce(
         (total, duration) => total + duration.elapsedTime,
         0
@@ -138,29 +139,33 @@ export default function TimeTracker() {
   return (
     <div className="timeTrackerComponent">
       <CurrentTimer />
-      <button className="start" onClick={handleStart}>
-        Start
-      </button>
-      <button className="stop" onClick={handleStop}>
-        Stop
-      </button>
+      <div className="timerButtons">
+        <button className="start" onClick={handleStart}>
+          Start
+        </button>
+        <button className="stop" onClick={handleStop}>
+          Stop
+        </button>
+      </div>
 
-      {sessionsByDates[currentDate] && <h2>Today</h2>}
+      {sessionsByDates[currentDate] && <h2 className="today">Today</h2>}
       {sessionsByDates[currentDate] &&
         sessionsByDates[currentDate].map((singleSession, i) => (
           //rescale => rescale units to their largest representation.
-          <div className="">
-          <h2 className="elapsedTime" key={i}>
-              {singleSession.timestamp}
-            </h2>
-            <h1 className="elapsedTime" key={i}>
-              {msRescale(singleSession.elapsedTime)}
-            </h1>
+          <div className="todaySessionEntry-withdelete">
+            <div className="todaySessionEntry">
+              <h2 className="elapsedTime" key={i}>
+                {singleSession.timestamp}
+              </h2>
+              <h1 className="elapsedTime" key={i}>
+                {msRescale(singleSession.elapsedTime)}
+              </h1>
+            </div>
             <button
               className="deleteButton"
               onClick={() => handleDelete(currentDate, i)}
             >
-              Delete
+             🗑️
             </button>
           </div>
         ))}
