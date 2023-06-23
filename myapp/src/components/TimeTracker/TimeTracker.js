@@ -5,7 +5,7 @@ export default function TimeTracker() {
   const [startTimeStamp, setStartTimeStamp] = useState(null);
   const [sessionsByDates, setSessionsByDates] = useState({});
   const [sessionTimeStamp, setSessionTimeStamp] = useState([]);
-  const currentDate = new Date().toLocaleDateString()
+  const currentDate = new Date().toLocaleDateString();
   // const currentTime = DateTime.now().toFormat("[HH:mm]: ");
   //   console.log("start:",startTimeStamp);
   //   console.log("session:",elapsedTimes);
@@ -15,8 +15,8 @@ export default function TimeTracker() {
   console.log("Sessions for Current Date:", sessionsByDates[currentDate]);
   console.log("Sessions by Dates:", sessionsByDates);
   // console.log("time", currentTime);
-  console.log("Todays DAte:", currentDate)
-  console.log("Todays DAte2:", new Date().toLocaleDateString())
+  console.log("Todays DAte:", currentDate);
+  console.log("Todays DAte2:", new Date().toLocaleDateString());
   // localStorage.clear()
   //   console.log(new Date())
 
@@ -76,7 +76,9 @@ export default function TimeTracker() {
   }
 
   function handleStop() {
-    // const newData = { "2023-06-15": { elapsedtime: 32334 } };
+    // const newData = {
+    //   "18/06/2023": [{ elapsedtime: 32334, timestamp: "[10:34AM]" },{ elapsedtime: 4944034, timestamp: "[4:05PM]" }],
+    // };
     const stopTime = DateTime.now().toFormat("[h:mm a]: ");
 
     setSessionsByDates((prev) => {
@@ -112,8 +114,21 @@ export default function TimeTracker() {
     });
   }
 
+  // function totalDaily(date) {
+  //   const formattedDate = new Date(date).toLocaleDateString();
+  //   if (sessionsByDates[formattedDate]) {
+  //     return sessionsByDates[formattedDate].reduce(
+  //       (total, duration) => total + duration.elapsedTime,
+  //       0
+  //     );
+  //   } else {
+  //     return 0;
+  //   }
+  // }
   function totalDaily(date) {
-    if (sessionsByDates[date] && Array.isArray(sessionsByDates[date])) {
+      
+  if (date === currentDate) {
+    if (sessionsByDates[date]) {
       return sessionsByDates[date].reduce(
         (total, duration) => total + duration.elapsedTime,
         0
@@ -122,6 +137,30 @@ export default function TimeTracker() {
       return 0;
     }
   }
+   else {const formattedDate = DateTime.fromISO(date).toFormat('dd/MM/yyyy');
+    if (sessionsByDates[formattedDate]) {
+      return sessionsByDates[formattedDate].reduce(
+        (total, duration) => total + duration.elapsedTime,
+        0
+      );
+    } else {
+      return 0;
+    }}
+  }
+  
+  //CHATGPT ANSWER
+  // function totalDaily(date) {
+  //   const formattedDate = DateTime.fromISO(date).toFormat('dd/MM/yyyy');
+  //   if (sessionsByDates[formattedDate]) {
+  //     return sessionsByDates[formattedDate].reduce(
+  //       (total, duration) => total + duration.elapsedTime,
+  //       0
+  //     );
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+
   const dailyTotal = totalDaily(currentDate);
 
   function getLastWeekDates(length) {
