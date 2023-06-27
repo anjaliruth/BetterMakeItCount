@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Duration, DateTime } from "luxon";
+import CurrentTimer from "../CurrentTimer.js";
 
 export default function TimeTracker() {
   const [startTimeStamp, setStartTimeStamp] = useState(null);
   const [sessionsByDates, setSessionsByDates] = useState({});
-  const [sessionTimeStamp, setSessionTimeStamp] = useState([]);
   const currentDate = new Date().toLocaleDateString();
   // const currentTime = DateTime.now().toFormat("[HH:mm]: ");
   //   console.log("start:",startTimeStamp);
@@ -14,26 +14,14 @@ export default function TimeTracker() {
   // console.log("Today total", todayTotal);
   console.log("Sessions for Current Date:", sessionsByDates[currentDate]);
   console.log("Sessions by Dates:", sessionsByDates);
+
   // console.log("time", currentTime);
-  console.log("Todays DAte:", currentDate);
-  console.log("Todays DAte2:", new Date().toLocaleDateString());
+  console.log("Todays Date:", currentDate);
+  console.log("Todays Date2:", new Date().toLocaleDateString());
   // localStorage.clear()
   //   console.log(new Date())
 
   const daysOfTheWeek = [1, 2, 3, 4, 5, 6, 7];
-  const useRenderOnInterval = (interval) => {
-    const [, setter] = useState(0);
-    function rerender() {
-      setter((prev) => prev + 1);
-    }
-
-    useEffect(() => {
-      //setup the interval
-      const intervalId = setInterval(rerender, interval);
-      //teardown
-      return () => clearInterval(intervalId);
-    }, [interval]);
-  };
 
   useEffect(() => {
     const storedSession = localStorage.getItem("session");
@@ -48,21 +36,6 @@ export default function TimeTracker() {
     }
   }, []);
 
-  function CurrentTimer() {
-    //inside this hook below, an effect is set up, where the function 'rerender' will be called each second, to update the (dummy) state, the state update will trigger a rerender of the CurrentTimer component, since there is a state inside this component which has been updated
-    useRenderOnInterval(1000);
-
-    function getElapsedTime() {
-      if (startTimeStamp) {
-        return Duration.fromMillis(Date.now() - startTimeStamp)
-          .rescale()
-          .toFormat("hh:mm:ss");
-      }
-      return "00:00:00";
-    }
-
-    return <h1 className="stopWatch">{getElapsedTime()}</h1>;
-  }
   function handleStart() {
     setStartTimeStamp(Date.now());
   }
@@ -98,6 +71,7 @@ export default function TimeTracker() {
       //by returning updatedSession and updatedElapsedTimes, we make sure that  subsequent code that depends on those state values will have access to the most recent and accurate data.
       // // Adds new data to localStorage
       // Object.assign(updatedSessions, newData);
+      console.log("Check here", updatedSessions);
       localStorage.setItem("session", JSON.stringify(updatedSessions));
       return updatedSessions;
     });
@@ -126,28 +100,28 @@ export default function TimeTracker() {
   //   }
   // }
   function totalDaily(date) {
-      
-  if (date === currentDate) {
-    if (sessionsByDates[date]) {
-      return sessionsByDates[date].reduce(
-        (total, duration) => total + duration.elapsedTime,
-        0
-      );
+    if (date === currentDate) {
+      if (sessionsByDates[date]) {
+        return sessionsByDates[date].reduce(
+          (total, duration) => total + duration.elapsedTime,
+          0
+        );
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      const formattedDate = DateTime.fromISO(date).toFormat("dd/MM/yyyy");
+      if (sessionsByDates[formattedDate]) {
+        return sessionsByDates[formattedDate].reduce(
+          (total, duration) => total + duration.elapsedTime,
+          0
+        );
+      } else {
+        return 0;
+      }
     }
   }
-   else {const formattedDate = DateTime.fromISO(date).toFormat('dd/MM/yyyy');
-    if (sessionsByDates[formattedDate]) {
-      return sessionsByDates[formattedDate].reduce(
-        (total, duration) => total + duration.elapsedTime,
-        0
-      );
-    } else {
-      return 0;
-    }}
-  }
-  
+
   //CHATGPT ANSWER
   // function totalDaily(date) {
   //   const formattedDate = DateTime.fromISO(date).toFormat('dd/MM/yyyy');
@@ -173,13 +147,14 @@ export default function TimeTracker() {
 
   return (
     <div className="timeTrackerComponent">
-      <CurrentTimer />
+      <h1 className="title">Make it Count!</h1>
+      <CurrentTimer startTimeStamp={startTimeStamp} />
       <div className="timerButtons">
         <button className="start" onClick={handleStart}>
-          Start
+ Start
         </button>
         <button className="stop" onClick={handleStop}>
-          Stop
+         Stop
         </button>
       </div>
 
@@ -204,10 +179,14 @@ export default function TimeTracker() {
             </button>
           </div>
         ))}
-      {dailyTotal && (
+      {dailyTotal ? (
         <h1 className="dailyTotal">Total: {msRescale(dailyTotal)}</h1>
+      ) : (
+        <p></p>
       )}
+
       <div className="total">
+        <h2 className="dashboardHeading">Previous 7 days</h2>
         {daysOfTheWeek.map((day, i) => (
           <div className="previousDailyTotal">
             <h2 key={i}>

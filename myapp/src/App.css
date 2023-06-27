@@ -13,10 +13,14 @@ body {
 .stopWatch {
   display: flex;
   max-width: 500px;
+  width: 60%;
   /* background-color: antiquewhite; */
   margin: 40px auto;
   justify-content: center;
-  font-size: 100px;
+  font-size: 60px;
+  @media screen and (min-width: 768px) {
+    font-size: 100px;
+  }
 }
 
 .timerButtons {
@@ -60,18 +64,28 @@ body {
 
 } */
 
+
+.title{
+  width: 300px;
+  text-align: center;
+  margin: 30px auto;
+  color: var(--color4);
+}
 .total {
   background-color: #EE586C;
   padding: 20px;
   border-radius: 10px;
-  max-width: 300px;
+  max-width: 200px;
   max-height: 500px;
   overflow: scroll;
-  position: absolute;
-  top: 100px;
-  right: 50px;
+  margin: 0 auto;
+  @media screen and (min-width: 1000px) {
+    
+    position: absolute;
+    top: 100px;
+    right: 20px;
+  }
 }
-
 
 .dailyTotal{
   margin: 30px auto;
@@ -79,3 +93,8 @@ body {
   text-align: center;
   font-weight: 800px;
 }
+
+.dashboardHeading{
+  color: var(--color3)
+}
+
