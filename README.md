@@ -10,8 +10,11 @@ I then wondered if I could create an app that would do this, but give the added 
 In this app: 
 <br/>
 1️⃣ You can start and stop the timer to calculate the elapsed time which corresponds to amount of time worked.
-2️⃣ A timestamp of when the stop button was clicked will appear with the elapsed time for that session. 
+<br/>
+2️⃣ A timestamp of when the stop button was clicked will appear with the elapsed time for that session.
+<br/>
 3️⃣ There will be a display of the total amount of work done for that day. 
+<br/>
 4️⃣ Once day has passed, you can see the total for the previous day in teh dashboard of total amount of work done each day. forthe past week. 
 
 ## What I learned in this project: 
