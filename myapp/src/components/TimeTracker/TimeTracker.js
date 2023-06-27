@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Duration, DateTime } from "luxon";
 import CurrentTimer from "../CurrentTimer.js";
+import play from "../Media/play.png"
+import stop from "../Media/stop.png"
 
 export default function TimeTracker() {
   const [startTimeStamp, setStartTimeStamp] = useState(null);
@@ -150,12 +152,11 @@ export default function TimeTracker() {
       <h1 className="title">Make it Count!</h1>
       <CurrentTimer startTimeStamp={startTimeStamp} />
       <div className="timerButtons">
-        <button className="start" onClick={handleStart}>
- Start
-        </button>
-        <button className="stop" onClick={handleStop}>
-         Stop
-        </button>
+        <img src={play} alt="playButton" className="start" onClick={handleStart} />
+        <img src={stop} alt="stopButton" className="stop" onClick={handleStop} />
+       
+        
+ 
       </div>
 
       {sessionsByDates[currentDate] && <h2 className="today">Today</h2>}
