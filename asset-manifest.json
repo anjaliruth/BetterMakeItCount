@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/BetterMakeItCount/static/css/main.ebb061c6.css",
+    "main.js": "/BetterMakeItCount/static/js/main.c1b4cc2d.js",
+    "static/js/787.d3befce1.chunk.js": "/BetterMakeItCount/static/js/787.d3befce1.chunk.js",
+    "index.html": "/BetterMakeItCount/index.html",
+    "main.ebb061c6.css.map": "/BetterMakeItCount/static/css/main.ebb061c6.css.map",
+    "main.c1b4cc2d.js.map": "/BetterMakeItCount/static/js/main.c1b4cc2d.js.map",
+    "787.d3befce1.chunk.js.map": "/BetterMakeItCount/static/js/787.d3befce1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ebb061c6.css",
+    "static/js/main.c1b4cc2d.js"
+  ]
+}
